@@ -1,8 +1,7 @@
 import discord
-from discord import ButtonStyle, Button, View, SelectOption, SelectMenu, Interaction
-from typing import List, Optional, Callable, Any
+from discord import ButtonStyle, ui
 
-class PaginatedView(View):
+class PaginatedView(ui.View):
     def __init__(self, ctx: discord.ext.commands.Context, embeds: List[discord.Embed], labels: Optional[List[str]] = None, 
                  emojis: Optional[List[str]] = None, styles: Optional[List[ButtonStyle]] = None, 
                  timeout: Optional[int] = 60, timeout_message: Optional[str] = None, 
@@ -18,16 +17,24 @@ class PaginatedView(View):
         emojis = emojis if emojis and len(emojis) == 5 else ["⏮️", "⏪", "⏩", "⏭️", "🚫"]
         styles = styles if styles and len(styles) == 5 else [ButtonStyle.primary]*4 + [ButtonStyle.secondary]
 
-        self.add_item(Button(style=styles[0], label=labels[0], emoji=emojis[0], custom_id="first"))
-        self.add_item(Button(style=styles[1], label=labels[1], emoji=emojis[1], custom_id="prev"))
-        self.add_item(Button(style=styles[2], label=labels[2], emoji=emojis[2], custom_id="next"))
-        self.add_item(Button(style=styles[3], label=labels[3], emoji=emojis[3], custom_id="last"))
-        self.add_item(Button(style=styles[4], label=labels[4], emoji=emojis[4], custom_id="close"))
-        self.add_item(SelectMenu(custom_id="go_to", options=[
-            SelectOption(label=f"Page {i+1}", value=str(i)) for i in range(len(embeds))
-        ]))
+        options = [
+            ui.SelectOption(label=f"Page {i+1}", value=str(i)) for i in range(len(embeds))
+        ]
 
-    async def interaction_check(self, interaction: Interaction) -> bool:
+        select_menu = ui.Select(
+            custom_id="go_to",
+            placeholder="Go to page...",
+            options=options
+        )
+
+        self.add_item(ui.Button(style=styles[0], label=labels[0], emoji=emojis[0], custom_id="first"))
+        self.add_item(ui.Button(style=styles[1], label=labels[1], emoji=emojis[1], custom_id="prev"))
+        self.add_item(ui.Button(style=styles[2], label=labels[2], emoji=emojis[2], custom_id="next"))
+        self.add_item(ui.Button(style=styles[3], label=labels[3], emoji=emojis[3], custom_id="last"))
+        self.add_item(ui.Button(style=styles[4], label=labels[4], emoji=emojis[4], custom_id="close"))
+        self.add_item(select_menu)
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
         return interaction.user.id == self.ctx.author.id
 
     async def on_timeout(self):
@@ -36,7 +43,7 @@ class PaginatedView(View):
         if self.on_timeout_callback:
             await self.on_timeout_callback()
 
-    async def on_interaction(self, interaction: Interaction):
+    async def on_interaction(self, interaction: discord.Interaction):
         if interaction.data["custom_id"] == "first":
             self.current = 0
         elif interaction.data["custom_id"] == "prev":
@@ -49,5 +56,8 @@ class PaginatedView(View):
             return await interaction.message.delete()
         elif interaction.data["custom_id"] == "go_to":
             self.current = int(interaction.data["values"][0])
+        
+        embed = self.embeds[self.current]
+        view = PaginatedView(self.ctx, self.embeds)
+        await interaction.response.edit_message(embed=embed, view=view)
 
-        await interaction.response.edit_message(embed=self.embeds[self.current])
