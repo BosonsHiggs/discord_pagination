@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="discord_pagination",
-    version="0.1",
+    version="0.2",
     packages=find_packages(),
     description="A Python library for creating dynamic paginated embeds in Discord bots using the discord.py library.",
     author="BosonsHiggs",
