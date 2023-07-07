@@ -11,7 +11,7 @@ class MyBot(commands.Bot):
         super().__init__(command_prefix=command_prefix, intents=intents)
 
     async def on_ready(self):
-        print(f'Cliente logado como {self.user} (ID: {self.user.id})')
+        print(f'Customer logged in as {self.user} (ID: {self.user.id})')
 
 bot = MyBot(intents=intents, command_prefix="!")
 
@@ -23,6 +23,6 @@ async def paginate(ctx):
                 
 async def main():
     async with bot:
-        await bot.start("TOKEN")
+        await bot.start("token")
 
 asyncio.run(main())
