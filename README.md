@@ -17,17 +17,21 @@ Here's a simple example of how to use `discord_pagination` in your Discord bot:
 ```python
 import discord
 from discord.ext import commands
-from discord_pagination import PaginatedView
+from pagination import PaginatedView
 
-bot = commands.Bot(command_prefix="!")
+intents = discord.Intents.default()
+intents.message_content = True
+
+bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.command()
 async def paginate(ctx):
-    embeds = [discord.Embed(title=f"Page {i}") for i in range(1, 11)]
-    view = PaginatedView(ctx, embeds)
-    await ctx.send(embed=embeds[0], view=view)
+	embeds = [discord.Embed(title=f"Page {i}") for i in range(1, 10)]
+	view = PaginatedView(ctx, embeds, use_buttons=True, owner_only=True)
+	await ctx.send(embed=embeds[0], view=view)
 
-bot.run("token")
+bot.run("TOKEN")
+
 ```
 
 In this example, we're creating a set of embeds and displaying them with a PaginatedView. The user can navigate through the embeds using the buttons added by the PaginatedView.
