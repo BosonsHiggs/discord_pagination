@@ -4,7 +4,7 @@ from .pagination import PaginatedView
 
 class HelpCommand(commands.DefaultHelpCommand):
 
-    async def send_bot_help(self, mapping, context, title:str='HELP', prefix:str="\\"):
+    async def send_bot_help(self, mapping, context:commands.Context=None, title:str='HELP', prefix:str="\\"):
         ctx = context if context is not None else self.context 
         embeds = []
 

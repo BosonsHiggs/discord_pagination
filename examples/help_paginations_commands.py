@@ -5,7 +5,7 @@ import traceback
 from discord.ext import commands
 from discord_pagination import PaginatedView, HelpCommand
 
-TOKEN = os.getenv("DISCORD_BOSONS_TESTS")
+TOKEN = os.getenv("BOT_LIA_TESTES")
 
 intents = discord.Intents.default()
 intents.message_content = True
