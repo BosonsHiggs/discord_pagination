@@ -12,7 +12,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
-#self.remove_command('help')
+bot.remove_command('help')
 bot.help_command = HelpCommand()
 
 @bot.command()
@@ -22,4 +22,20 @@ async def paginate(ctx):
 	view = PaginatedView(ctx, embeds, use_buttons=True, owner_only=True)
 	await ctx.send(embed=embeds[0], view=view)
 
+@bot.command()
+async def help_command(ctx):
+	"""Custom Help command"""
+	mapping = {cog: cog.get_commands() for cog in bot.cogs.values()}
+	mapping[None] = [cmd for cmd in bot.commands if cmd.cog is None]
+
+
+	# Invoke the help command
+	custom_labels = ["First", "Previous", "Next", "Last", "Close"]
+	custom_emojis = ["⏮️", "⏪", "⏩", "⏭️", "🚫"]
+	custom_styles = [ButtonStyle.primary] * 4 + [ButtonStyle.secondary]
+
+	await bot.help_command.send_bot_help(mapping, ctx, title="BOT COMMANDS", 
+											custom_labels=custom_labels, 
+											custom_emojis=custom_emojis, custom_styles=custom_styles
+											)
 bot.run(TOKEN)
