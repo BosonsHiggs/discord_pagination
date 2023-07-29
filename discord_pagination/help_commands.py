@@ -3,16 +3,12 @@ from discord.ext import commands
 from .pagination import PaginatedView
 
 class HelpCommand(commands.DefaultHelpCommand):
-
     async def send_bot_help(self, mapping, context:commands.Context=None, title:str='HELP', prefix:str="\\"):
         ctx = context if context is not None else self.context 
         embeds = []
 
         for cog, commands in mapping.items():
-            if cog is None:
-                continue  # Ignorar comandos que não estão em um cog
-
-            title = cog.qualified_name if title is None else title
+            title = cog.qualified_name if cog is not None else "No Cog"
 
             embed = discord.Embed(title=title)
             added = False  # Variável para rastrear se algum comando foi adicionado
@@ -39,6 +35,9 @@ class HelpCommand(commands.DefaultHelpCommand):
                 embeds.append(embed)
 
         # seu código de paginação
-        custom_labels = ["First", "Previous", "Next", "Last", "Close"]
-        view = PaginatedView(ctx, embeds, labels=custom_labels)
-        await ctx.send(embed=embeds[0], view=view)
+        if not embeds:
+            await ctx.send("There are no available commands you can execute.")
+        else:
+            custom_labels = ["First", "Previous", "Next", "Last", "Close"]
+            view = PaginatedView(ctx, embeds, labels=custom_labels)
+            await ctx.send(embed=embeds[0], view=view)
