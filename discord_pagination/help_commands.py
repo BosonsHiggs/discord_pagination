@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from pagination import PaginatedView
+from .pagination import PaginatedView
 
 class HelpCommand(commands.DefaultHelpCommand):
 

@@ -1,2 +1,2 @@
 from .pagination import PaginatedView
-from .pagination import HelpCommand
+from .help_commands import HelpCommand
